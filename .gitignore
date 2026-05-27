@@ -33,7 +33,7 @@ wp-config.php
 /__test4
 /__test4embed
 /__test5history
-/app
+# /app
 /app_old
 /app_test
 /awstats
