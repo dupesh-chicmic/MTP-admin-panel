@@ -1,0 +1,61 @@
+# Configuration wordpress
+wp-config.php 
+
+# Example themes
+#/wp-content/themes/twenty*/
+
+# Example plugin
+#/wp-content/plugins/hello.php
+
+# Uploads
+#/wp-content/uploads/*
+
+# Log files
+*.log
+
+# htaccess
+.htaccess
+# All plugins
+#
+# Note: If you wish to whitelist plugins,
+# uncomment the next line
+#/wp-content/plugins
+
+# All themes
+#
+# Note: If you wish to whitelist themes,
+# uncomment the next line
+#/wp-content/themes
+
+/__test
+/__test2
+/__test3
+/__test4
+/__test4embed
+/__test5history
+/app
+/app_old
+/app_test
+/awstats
+/CarGuide
+/DEL_protected
+/dinkey
+/dinkey_server
+/DinkeyV2
+/downloads
+/iGuide
+/Mooneys
+/pma
+/remote
+/Search-Replace-DB-master
+/the_guide_domain
+/theGuide
+/z_old_qbix_system
+/db.php
+/.htaccess.bak
+/index.html
+/imgs
+
+
+robots.txt
+sitemap.xml
