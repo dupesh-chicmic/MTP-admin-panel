@@ -5,20 +5,18 @@
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'My Console Application',
+	'import'=>array(
+		'application.models.*',
+		'application.components.*',
+	),
 	// application components
 	'components'=>array(
 		'db'=>array(
-			'connectionString' => 'sqlite:'.dirname(__FILE__).'/../data/testdrive.db',
-		),
-		// uncomment the following to use a MySQL database
-		/*
-		'db'=>array(
-			'connectionString' => 'mysql:host=localhost;dbname=testdrive',
-			'emulatePrepare' => true,
-			'username' => 'root',
-			'password' => '',
+			'class'=>'CDbConnection',
+			'connectionString'=>'mysql:host=mtp.cjdctzykicco.eu-west-1.rds.amazonaws.com;dbname=mtp_app_db;',
 			'charset' => 'utf8',
+			'username' => 'mtp_admin',
+			'password' => 'Tk3H7wPJRLxyIp3W',
 		),
-		*/
 	),
 );

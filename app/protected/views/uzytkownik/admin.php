@@ -57,7 +57,8 @@ function confirmReset()
         echo Yii::app()->user->getFlash('successMsg');
         echo '</div>';
     }    
-echo '<a style="padding-bottom:15px;" href="index.php?r=site/addNewUser">Add new user</a><hr><br />'; ?>
+echo '<a style="padding-bottom:15px;" href="index.php?r=site/addNewUser">Add new user</a> | ';
+echo '<a style="padding-bottom:15px;" href="index.php?r=site/resetGuideTokensUI">Reset Guide Tokens for Selected Users</a><hr><br />'; ?>
 
 <p>
 You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
