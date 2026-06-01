@@ -7,7 +7,7 @@ class SiteController extends Controller {
     const MSG_RESET_USER_TOKEN = 'Token has been removed.';
     const MSG_RESET_ALL_MOBILE_TOKENS = 'Mobile tokens were cleared successfully.';
     const MSG_NO_USERS_WITH_MOBILE_TOKEN = 'No users with mobile token.';
-    const MSG_GUIDE_TOKEN_SELECTION_SAVED = 'Selected users were saved for future daily resets.';
+    const MSG_GUIDE_TOKEN_SELECTION_SAVED = 'Selected users were saved.';
     const MSG_AFTER_SENT_CONTACT_MSG = 'Thank you for contacting us. We will respond to you as soon as possible.';
     const MSG_USER_ADDED = 'User has been added.';
     const MSG_USER_DELETED = 'User was deleted.';
@@ -793,26 +793,25 @@ MTP Team
         $criteria = new CDbCriteria;
         $criteria->order = 'imie ASC, nazwisko ASC, login ASC';
         $allUsers = Uzytkownik::model()->findAll($criteria);
-        
-        if (isset($_POST['saveSelection'])) {
+
+        if (isset($_POST['ajaxSaveSelection'])) {
             $selectedUserIds = isset($_POST['selectedUsers']) && is_array($_POST['selectedUsers']) ? $_POST['selectedUsers'] : array();
             $normalizedUserIds = $this->normalizeGuideTokenUserIds($selectedUserIds);
             $this->saveGuideTokenUserIds($normalizedUserIds);
-            Yii::app()->user->setFlash('successMsg', self::MSG_GUIDE_TOKEN_SELECTION_SAVED);
-            $this->render('resetGuideTokens', array(
-                'users' => $allUsers,
-                'savedSelectedUsers' => $normalizedUserIds,
-            ));
-            return;
+            header('Content-Type: application/json; charset=utf-8');
+            echo CJSON::encode(array('ok' => true, 'selectedCount' => count($normalizedUserIds)));
+            Yii::app()->end();
         }
 
         $selectedUserIds = array();
-        if (isset($_POST['selectedUsers']) && is_array($_POST['selectedUsers']) && count($_POST['selectedUsers']) > 0) {
-            $selectedUserIds = $this->normalizeGuideTokenUserIds($_POST['selectedUsers']);
+        if (isset($_POST['executeReset'])) {
+            if (isset($_POST['actionSelectedUsers']) && is_array($_POST['actionSelectedUsers']) && count($_POST['actionSelectedUsers']) > 0) {
+                $selectedUserIds = $this->normalizeGuideTokenUserIds($_POST['actionSelectedUsers']);
+            }
         } elseif (isset($_GET['runSaved']) && $_GET['runSaved'] == '1') {
             $selectedUserIds = $this->getSavedGuideTokenUserIds();
         } else {
-            if (!empty($_POST)) {
+            if (!empty($_POST) && !isset($_POST['executeReset'])) {
                 Yii::app()->user->setFlash('errorMsg', 'Please select at least one user or save a selection first.');
             } else {
                 Yii::app()->user->setFlash('errorMsg', 'No users were selected.');
@@ -825,7 +824,7 @@ MTP Team
         }
 
         if (empty($selectedUserIds)) {
-            Yii::app()->user->setFlash('errorMsg', 'Please select at least one user.');
+            Yii::app()->user->setFlash('errorMsg', 'Please select at least one user in the table.');
             $this->render('resetGuideTokens', array(
                 'users' => $allUsers,
                 'savedSelectedUsers' => $this->getSavedGuideTokenUserIds(),
@@ -854,10 +853,28 @@ MTP Team
         }
 
         $results[] = 'Guide token refresh finished: ' . date('Y-m-d H:i:s');
-        file_put_contents($logFile, implode("\n", $results) . "\n", FILE_APPEND);
+        $logWriteOk = @file_put_contents($logFile, implode("\n", $results) . "\n", FILE_APPEND);
 
-        Yii::app()->user->setFlash('successMsg', 'Token reset process completed. Check the log for details.');
+        if ($logWriteOk === false) {
+            Yii::app()->user->setFlash('errorMsg', 'Token reset completed, but the log file could not be updated. Check runtime permissions.');
+        } else {
+            Yii::app()->user->setFlash('successMsg', 'Token reset process completed. Check the log for details.');
+        }
         $this->render('resetGuideTokensResults', array('results' => $results));
+    }
+
+    public function actionDownloadResetGuideTokensLog() {
+        if (!Yii::app()->user->isAdmin && !Yii::app()->user->isSu()) {
+            throw new CHttpException(403, 'Forbidden');
+        }
+        $filePath = Yii::app()->runtimePath . '/reset_guide_tokens.log';
+        if (!is_file($filePath)) {
+            throw new CHttpException(404, 'Log file not found');
+        }
+        header('Content-Type: text/plain; charset=utf-8');
+        header('Content-Disposition: attachment; filename="reset_guide_tokens.log"');
+        readfile($filePath);
+        Yii::app()->end();
     }
 
     protected function getGuideTokenSelectionFilePath() {
@@ -1006,8 +1023,8 @@ MTP Team
                 $model->attributes = $_POST['Uzytkownik'];
                 //
 
-                $model->typ_uzytkownika = 007;
-                $model->status_uzytkownika = 008;
+                $model->typ_uzytkownika = 7;
+                $model->status_uzytkownika = 8;
                 $model->mobile_on = $_POST['Uzytkownik']['mobile_on'];
                 $model->network_licences_number = $_POST['Uzytkownik']['network_licences_number'];
 

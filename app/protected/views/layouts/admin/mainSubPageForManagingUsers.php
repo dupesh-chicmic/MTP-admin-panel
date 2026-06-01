@@ -35,7 +35,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/js/bootstrap/css
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/bootstrap/js/bootstrap.min.js');
 ?>
 </head>
-<body style="background-color:#ffffff;">  
+<body class="<?php echo in_array($this->route, array('site/resetGuideTokensUI', 'site/resetGuideTokensForSelectedUsers')) ? 'page-reset-guide-tokens' : ''; ?>" style="background-color:#ffffff;">  
             <div id="headerContainer">
             <div id="header">
                 <div class="width">
@@ -46,6 +46,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/bootstrap/
         <div id="top" class="<?php echo Yii::app()->user->isGuest?'guest':'not_guest';?>">
             <div class="width">
             <ul id="nav">
+                <?php if ($this->route === 'site/resetGuideTokensUI' || $this->route === 'site/resetGuideTokensForSelectedUsers'): ?>
+                <li><a href="<?php echo Yii::app()->createUrl('site/users'); ?>">Back</a></li>
+                <?php endif; ?>
                 <li><a href="<?php echo Yii::app()->createUrl('cms/cmsPage/create'); ?>"><img src="./images/logo.png" style="width:50px; height:30px; margin-right: 5px;" />Manage website</a></li>
             </ul>
             </div> <!-- width -->
